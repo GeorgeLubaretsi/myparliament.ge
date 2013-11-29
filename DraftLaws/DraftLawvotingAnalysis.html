@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<div id="votesperlaw">
+   <h3>Analysis of  votes per law</h3>
+   <div>From the 375 votes for laws in our data set, 365 stated that MP's were absent. On average, 62 MP's were absent at a vote.
+The maximum number of absent MP's was 101, the minimum was 25.
+</div>
+   <div>The average number of MP's supporting a law in our data set is 86. The maximum was 114, the minimum was 52.
+</div>
+   <div>
+Of the 375 votes for laws in our data set, 365 stated that MP's voted against. In 293 of these 0 MP's voted against the law.
+Of the 78 laws that at least one MP voted against, the average, maximum and minumum number of votes against the law 
+were 5 ,  33  and  1, respectively.
+</div>
+</div>
+<div id="vote">
+   <h3>Analysis of  votes per person</h3>
+Each of the 375 votes for laws in our data set has a document attached to it which indicates for each MP whether he or she was present and how he or she voted. 
+We present a small analysis of these votes per MP. 
+A total of 34971 lines of information is present in all these files, but not all of it is presented in a uniform format.
+For our analysis, we only use the 26138 number of lines for which we have the following information present:
+<ol>
+      <li>First name, surname, function and pary affiliation of the MP, and </li>
+      <li>whether the MP registered for the particular vote, and how he or she voted.</li>
+   </ol>
+All laws in our data set were passed and obtained a majority vote. 
+We have a closer look at the voting results.
+First we look at what types of votes were recorded and how often.
+<table border="1">
+      <caption>Number of votes for each distinct way of voting.</caption>
+      <tr>
+         <th>Vote</th>
+         <th>Count</th>
+      </tr>
+      <tr>
+         <td>დიახ</td>
+         <td>25386</td>
+      </tr>
+      <tr>
+         <td>არა</td>
+         <td>370</td>
+      </tr>
+      <tr>
+         <td>კენჭისყრის შედეგი</td>
+         <td>317</td>
+      </tr>
+      <tr>
+         <td>არ მიუცია / არ ესწრებოდა*ხელით დამატებული</td>
+         <td>65</td>
+      </tr>
+   </table>
+   <p>The next table shows how each faction in parliament voted.</p>
+   <table border="1">
+      <caption>Total number of votes for each party </caption>
+      <tr>
+         <th>Party</th>
+         <th>Count</th>
+         <th>დიახ</th>
+         <th>Not დიახ</th>
+      </tr>
+      <tr>
+         <td>ოცნ</td>
+         <td>13517</td>
+         <td>13504</td>
+         <td>13</td>
+      </tr>
+      <tr>
+         <td>ოცნ-დემ</td>
+         <td>2789</td>
+         <td>2788</td>
+         <td>1</td>
+      </tr>
+      <tr>
+         <td>ოცნ-რეს</td>
+         <td>2475</td>
+         <td>2470</td>
+         <td>5</td>
+      </tr>
+      <tr>
+         <td>ოც.ერ.ფ</td>
+         <td>1734</td>
+         <td>1732</td>
+         <td>2</td>
+      </tr>
+      <tr>
+         <td>ოცნ-კონ</td>
+         <td>1631</td>
+         <td>1630</td>
+         <td>1</td>
+      </tr>
+      <tr>
+         <td>ოც-მრეწ</td>
+         <td>1119</td>
+         <td>1116</td>
+         <td>3</td>
+      </tr>
+      <tr>
+         <td>უპ.დამ.</td>
+         <td>1056</td>
+         <td>1055</td>
+         <td>1</td>
+      </tr>
+      <tr>
+         <td>ნაც-მოძ</td>
+         <td>866</td>
+         <td>530</td>
+         <td>336</td>
+      </tr>
+      <tr>
+         <td>ნაც-მაჟ</td>
+         <td>396</td>
+         <td>356</td>
+         <td>40</td>
+      </tr>
+      <tr>
+         <td>ფრაქცია</td>
+         <td>317</td>
+         <td>0</td>
+         <td>317</td>
+      </tr>
+      <tr>
+         <td>ნაც-რეგ</td>
+         <td>233</td>
+         <td>200</td>
+         <td>33</td>
+      </tr>
+      <tr>
+         <td>პარლამენტარი</td>
+         <td>4</td>
+         <td>4</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>ფრაქციის თავმჯდომარის მოადგილე</td>
+         <td>1</td>
+         <td>1</td>
+         <td>0</td>
+      </tr>
+   </table>
+   <p>We saw above that the number of MPs that is absent at votes is quite high. The next table presents the different ways in which MPs are registered.</p>
+   <table border="1">
+      <caption>Number of votes  per registration type.</caption>
+      <tr>
+         <th>Type</th>
+         <th>Count</th>
+      </tr>
+      <tr>
+         <td>დიახ</td>
+         <td>25756</td>
+      </tr>
+      <tr>
+         <td>რეგისტრაცია</td>
+         <td>317</td>
+      </tr>
+      <tr>
+         <td>არა</td>
+         <td>65</td>
+      </tr>
+   </table>
+   <p>We can also look how MPs vote when we consider their function in parliament. First we see how many different persons we have in our data set for each function.
+<table border="1">
+         <caption>Number of different persons per type of MP.</caption>
+         <tr>
+            <th>Type</th>
+            <th>Count</th>
+         </tr>
+         <tr>
+            <td>პარლამენტარი</td>
+            <td>105</td>
+         </tr>
+         <tr>
+            <td>ფრაქციის თავმჯდომარე</td>
+            <td>10</td>
+         </tr>
+         <tr>
+            <td>ფრაქციის თავმჯდომარის მოადგილე</td>
+            <td>9</td>
+         </tr>
+         <tr>
+            <td>მდივანი</td>
+            <td>8</td>
+         </tr>
+         <tr>
+            <td>პარლამენტის თავმჯდომარის მოადგილე</td>
+            <td>4</td>
+         </tr>
+         <tr>
+            <td>ად. უფლ.დაცვის კომიტეტის თავმჯდომარე</td>
+            <td>2</td>
+         </tr>
+         <tr>
+            <td>თავმჯდომარის მოადგილე</td>
+            <td>2</td>
+         </tr>
+         <tr>
+            <td>წოდება</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>აგრარ. საკითხ. კომიტეტის თავმჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>ევროპასთან ინტეგ. კომიტეტის თავმჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>საპროც. საკ. და წეს. კომიტეტის თავმჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>პარლამენტის თავმჯდომარის პირველი მოადგილე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>საფინანსო-საბიუჯეტო კომიტეტის თავმჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>დიასპ. და კავკ. საკ. კომიტეტის თავმჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>თავდაც. და უშიშ. კომიტეტის თავმჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>რეგ. პოლ. თვითმ. კომიტეტის თავმჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>დარგ. ეკ. და ეკ. პოლ. კომიტეტის თავმჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>პარლამენტის თავმჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>გარ. დაცვისა და ბუნ. რეს კომიტეტის თავჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>სპორტ. და ახალგაზ. საქმ. კომიტეტის თავმჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>იურიდიულ საკითხ. კომიტეტის თავმჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>ჯან. დაცვის და სოც. საკ. კომიტეტის თავმჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>საგარეო ურთიერთ. კომიტეტის თავმჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>განათ. მეცნ. კულტ. კომიტეტის თავმჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>საპარლამენტო უმრავლესობის ლიდერი</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>საპარლამენტო უმცირესობის ლიდერი</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>ფრაქცია 'ქართული ოცნების' თავჯდომარე</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>ენუქიძე გოჩა</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>კორძაია</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>მისაბიშვილი გურამ</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>ფეიქრიშვილი გიორგი</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <td>შერვაშიძე იაშა</td>
+            <td>1</td>
+         </tr>
+      </table>
+In the next table we show how MPs in a particular function vote.
+</p>
+   <table border="1">
+      <caption>Number of votes  per type of MP.</caption>
+      <tr>
+         <th>Type</th>
+         <th>Count</th>
+         <th>დიახ</th>
+         <th>Not დიახ</th>
+      </tr>
+      <tr>
+         <td>პარლამენტარი</td>
+         <td>15410</td>
+         <td>15040</td>
+         <td>370</td>
+      </tr>
+      <tr>
+         <td>ფრაქციის თავმჯდომარის მოადგილე</td>
+         <td>1644</td>
+         <td>1633</td>
+         <td>11</td>
+      </tr>
+      <tr>
+         <td>ფრაქციის თავმჯდომარე</td>
+         <td>1612</td>
+         <td>1587</td>
+         <td>25</td>
+      </tr>
+      <tr>
+         <td>მდივანი</td>
+         <td>1343</td>
+         <td>1332</td>
+         <td>11</td>
+      </tr>
+      <tr>
+         <td>პარლამენტის თავმჯდომარის მოადგილე</td>
+         <td>550</td>
+         <td>546</td>
+         <td>4</td>
+      </tr>
+      <tr>
+         <td>ად. უფლ.დაცვის კომიტეტის თავმჯდომარე</td>
+         <td>331</td>
+         <td>330</td>
+         <td>1</td>
+      </tr>
+      <tr>
+         <td>წოდება</td>
+         <td>317</td>
+         <td>0</td>
+         <td>317</td>
+      </tr>
+      <tr>
+         <td>აგრარ. საკითხ. კომიტეტის თავმჯდომარე</td>
+         <td>304</td>
+         <td>303</td>
+         <td>1</td>
+      </tr>
+      <tr>
+         <td>პარლამენტის თავმჯდომარის პირველი მოადგილე</td>
+         <td>301</td>
+         <td>301</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>თავმჯდომარის მოადგილე</td>
+         <td>299</td>
+         <td>295</td>
+         <td>4</td>
+      </tr>
+      <tr>
+         <td>იურიდიულ საკითხ. კომიტეტის თავმჯდომარე</td>
+         <td>298</td>
+         <td>298</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>საფინანსო-საბიუჯეტო კომიტეტის თავმჯდომარე</td>
+         <td>297</td>
+         <td>297</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>თავდაც. და უშიშ. კომიტეტის თავმჯდომარე</td>
+         <td>296</td>
+         <td>296</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>ჯან. დაცვის და სოც. საკ. კომიტეტის თავმჯდომარე</td>
+         <td>295</td>
+         <td>295</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>საპროც. საკ. და წეს. კომიტეტის თავმჯდომარე</td>
+         <td>294</td>
+         <td>293</td>
+         <td>1</td>
+      </tr>
+      <tr>
+         <td>გარ. დაცვისა და ბუნ. რეს კომიტეტის თავჯდომარე</td>
+         <td>292</td>
+         <td>292</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>სპორტ. და ახალგაზ. საქმ. კომიტეტის თავმჯდომარე</td>
+         <td>288</td>
+         <td>288</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>დიასპ. და კავკ. საკ. კომიტეტის თავმჯდომარე</td>
+         <td>286</td>
+         <td>286</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>რეგ. პოლ. თვითმ. კომიტეტის თავმჯდომარე</td>
+         <td>286</td>
+         <td>286</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>ევროპასთან ინტეგ. კომიტეტის თავმჯდომარე</td>
+         <td>276</td>
+         <td>276</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>განათ. მეცნ. კულტ. კომიტეტის თავმჯდომარე</td>
+         <td>254</td>
+         <td>254</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>საგარეო ურთიერთ. კომიტეტის თავმჯდომარე</td>
+         <td>245</td>
+         <td>244</td>
+         <td>1</td>
+      </tr>
+      <tr>
+         <td>პარლამენტის თავმჯდომარე</td>
+         <td>244</td>
+         <td>243</td>
+         <td>1</td>
+      </tr>
+      <tr>
+         <td>საპარლამენტო უმრავლესობის ლიდერი</td>
+         <td>193</td>
+         <td>192</td>
+         <td>1</td>
+      </tr>
+      <tr>
+         <td>დარგ. ეკ. და ეკ. პოლ. კომიტეტის თავმჯდომარე</td>
+         <td>172</td>
+         <td>171</td>
+         <td>1</td>
+      </tr>
+      <tr>
+         <td>საპარლამენტო უმცირესობის ლიდერი</td>
+         <td>4</td>
+         <td>1</td>
+         <td>3</td>
+      </tr>
+      <tr>
+         <td>ფრაქცია 'ქართული ოცნების' თავჯდომარე</td>
+         <td>2</td>
+         <td>2</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>ენუქიძე გოჩა</td>
+         <td>1</td>
+         <td>1</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>კორძაია</td>
+         <td>1</td>
+         <td>1</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>მისაბიშვილი გურამ</td>
+         <td>1</td>
+         <td>1</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>ფეიქრიშვილი გიორგი</td>
+         <td>1</td>
+         <td>1</td>
+         <td>0</td>
+      </tr>
+      <tr>
+         <td>შერვაშიძე იაშა</td>
+         <td>1</td>
+         <td>1</td>
+         <td>0</td>
+      </tr>
+   </table>
+</div>
