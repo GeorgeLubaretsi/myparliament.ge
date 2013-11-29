@@ -18,7 +18,7 @@ let $table :=
 
 
 
-(: Analysis of $oucomes :)
+(: Analysis of $outcomes :)
 let $absent := $outcomes//@არესწრება
 let $support := $outcomes//@მომხრე
 let $against := $outcomes//@წინააღმდეგი
@@ -164,10 +164,40 @@ In the next table we show how MPs in a particular function vote.
 {$titletable}
 </div>
 
+
+(: now we count per person for how many laws he actually voted :)
+
+let $personcount := 
+<div id='mpcount'>
+<h3>Analysis of the number of votes each MP attended</h3>
+<table border='1'>
+<caption>Number of laws each MP voted on.</caption>
+<tr><th>MP</th><th>Count</th></tr>
+
+{
+ 
+let $people := for $row in $cleanvotes return <n n='{concat($row/td[2],' ',$row/td[3])}'>{($row/td[2],$row/td[3])}</n>
+let $distinct-people := distinct-values($people//@n)
+for $p in $distinct-people
+    let $fn := ($people[@n=$p])[1]//td[1]
+    let $sn := ($people[@n=$p])[1]//td[2]
+    
+    let $c := count($cleanvotes[td[2]=$fn][td[3]=$sn])
+    
+     order by $c descending
+    return
+    <tr><td>{$p}</td><td>{$c}</td> </tr>
+}
+   </table>
+   
+   </div>
+   
+   
 return
 
+
 ( 
- 
+ $personcount,
 <div id='votesperlaw'>
 <h3>Analysis of  votes per law</h3>
 {($absentstat,$supporters,$againststat)}

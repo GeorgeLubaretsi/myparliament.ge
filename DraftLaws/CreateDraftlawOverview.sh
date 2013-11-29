@@ -1,5 +1,6 @@
 
-# Script to scrape the draft law overview from http://parliament.ge
+# Script to scrape the draft law overview from http://parliament.ge, then also scrape all lists of voting details and store these,
+#finally we do an analysis with XQuery
 
 # The output is a CSV $DraftlawOverview with four fields:   Output is inverse chronologically ordered.
 #ISO-date   Draft-law Number    Draft-law Name  URL to Draft Law
@@ -19,14 +20,16 @@ sed 's/&nbsp;/ /g'    > DraftlawOverview.xml
 
 # step 2.1 write them to nice XML files in the folder VotingRecordsRaw
 mkdir VotingRecordsRaw
+# create from the overview file, for each line a wget statement which saves the file, exdtracts the wanted XML from the docx zip file and removes the docx zip file again.
 cat "$DraftlawOverview"  | awk -F$'\t' '{print "wget -O "$2" "$4"; unzip -p "$2" word/document.xml > VotingRecordsRaw/"$2".xml;rm "$2";"}' > TMPgetVotes;
-bash TMPgetVotes;
+bash TMPgetVotes;  # run all these statements
 rm TMPgetVotes;
 # throw away empty XML files  
 #for f in VotingRecordsRaw/*;do if [  -s $f ]; then  true;else rm $f; fi;done
 #BETTER: throw away all files which do not get through xmllint (use exit status)
 for f in VotingRecordsRaw/*;do xmllint -noout $f; if [  $? != 0 ]; then  rm $f; fi;done
-# step 3 now extract how everybody voted and the outcomes of each vote with the XQuery DraftLaw-VoteExtractor.xquery
+# step 3 now extract how everybody voted and the outcomes of each vote with the XQuery DraftLaw-VoteExtractor.xquery (which uses the files in VotingRecordsRaw)
 
+# then do the analysis with DraftLawvotingAnalysis.xquery which yields DraftLawvotingAnalysis.html
 
 
