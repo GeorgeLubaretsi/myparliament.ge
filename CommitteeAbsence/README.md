@@ -1,4 +1,4 @@
-# Purpose: Scrape absence from committee meetings of individual MPs from http://www.parliament.ge/index.php?option=com_content&view=category&id=135&Itemid=110&lang=en
+ Purpose: Scrape absence from committee meetings of individual MPs from http://www.parliament.ge/index.php?option=com_content&view=category&id=135&Itemid=110&lang=en
 and store the information in a CSV file. Also the same data in XML format is created.
 
 For Running: update the path to the saxon jarfile in ETL_CommitteeAbsenceFiles.sh
