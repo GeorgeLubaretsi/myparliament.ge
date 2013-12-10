@@ -6,6 +6,6 @@ url="http://parliament.ge/index.php?option=com_content&view=article&id=1682&Item
 
 ../CrawlScripts/CleanGovPage.sh "$url"
 
-java -cp /usr/local/bin/saxon9he.jar net.sf.saxon.Query CreateLinkOverview.xquery > MPlist-geo.xml
+java -cp /usr/local/bin/saxon9he.jar net.sf.saxon.Query CreateLinkOverview.xquery | xmllint --format - > MPlist-geo.xml
 java -cp /usr/local/bin/saxon9he.jar net.sf.saxon.Query CreateLinkOverviewAsJSON.xquery | sed '1d' > MPlist-geo.json
 java -cp /usr/local/bin/saxon9he.jar net.sf.saxon.Query CreateLinkOverviewAsCSV.xquery | sed '1d' > MPlist-geo.csv

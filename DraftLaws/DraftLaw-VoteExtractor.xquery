@@ -3,10 +3,9 @@ import module namespace tiUtil= "http://transparency.ge/XML-Utilities" at "/User
  
 
 declare variable $baseurl := "http://parliament.ge";
-
-
 declare variable $col := collection('VotingRecordsRaw');
 
+declare variable $AnalysisType external; (: vote|outcome :)
 
  
 let $VotesPerLaw := 
@@ -41,7 +40,7 @@ let $niceroutcome := tokenize($outcome,';')
 (: we choose to output as attributes instead of as td elements. :)
 let $supernice:= <tr><td>{
                     (
-                    attribute LawID {$draftlawID}
+                    attribute {"LawID"} {$draftlawID}
                     ,
                     for $av in $niceroutcome 
                     let $pair := tokenize($av,':')
@@ -57,5 +56,9 @@ let $supernice:= <tr><td>{
  </table>
  
  return
- $OutcomePerLaw
+ 
+ if ($AnalysisType='vote') then $VotesPerLaw else
+ if ($AnalysisType='outcome') then $OutcomePerLaw else
+ "ERROR: unknown outcome type. Should be one of vote|outcome"
+  
 (: or $VotesPerLaw, or if you want CSV:  tiUtil:trTOcsv($VotesPerLaw)  :)

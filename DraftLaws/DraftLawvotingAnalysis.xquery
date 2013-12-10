@@ -1,6 +1,8 @@
 let $votes := doc('VotesPerLaw.xml')
 let $outcomes := doc('OutcomePerLaw.xml')
 
+let $PassedlawOverview := doc('PassedlawOverview.xml')
+
 let $outcometot := count($outcomes//tr)
 (:
 let $table := 
@@ -137,9 +139,26 @@ for $v in $values
    </table>
    
    
+   let $lawspermonth :=
+   <table border='1' id='votespermonth'>
+   <caption>Number of laws voted on per month.</caption>
+   {
+    let $months := distinct-values(for $date in $PassedlawOverview//tr//td[1] return replace($date,'-..$',''))
+    for $mon in $months 
+        let $c := count($PassedlawOverview//tr[.//td[1][contains(.,$mon)]])
+        order by $mon
+        return <tr><td>{$mon}</td><td>{$c}</td></tr>
+   }
+   </table>
    
 let $voteanalysis :=
 <div id='vote'>
+<h2>Analysis of votes</h2>
+<p>This analysis is based on data extracted at {current-dateTime()}.</p>
+
+<h3>Analysis of Votes per month</h3>
+{$lawspermonth}
+
 <h3>Analysis of  votes per person</h3>
 Each of the {$outcometot} votes for laws in our data set has a document attached to it which indicates for each MP whether he or she was present and how he or she voted. 
 We present a small analysis of these votes per MP. 
