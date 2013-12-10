@@ -20,8 +20,9 @@ let $doc := doc('1682371.xml')
 let $AD := doc($GeoAssetDeclaration)
 let $parlGEO := "საქართველოს პარლამენტი"
 let $electiondate := "2012-10-01"
-let $MPADs := $AD//tr[.//td[5][contains(.,$parlGEO)]]  (: only consider AD's whose organization equals "Parliament of Georgia" and who are filled after the election date :)
-                     [.//td[7][. ge $electiondate]]
+let $MPADs := $AD//tr[.//td[5][contains(.,$parlGEO)]]  (: only consider AD's whose organization equals "Parliament of Georgia" and who are filled after the election date :)                 
+                 
+                 (:   [.//td[7][. ge $electiondate]]  :)
 (: end of part for Asset Declarations :)
 
 
@@ -41,14 +42,21 @@ let $table :=
      let $MP:= normalize-space($row//*:td)
      let $MPclean := normalize-space(replace($MP,"\(.*\)",""))
      let $MPnames := tokenize($MPclean,' ')
-     let $LastAD := replace(tiUtil:AssetDeclarations($MPnames[2],$MPnames[1],$MPADs)[1]//td[last()],'#','')   (: get the last asset declaration, and from that the ID :)
-     
+     let $ADs := tiUtil:AssetDeclarations($MPnames[2],$MPnames[1],$MPADs) (: these are ordered inverse chronologically :) 
+     let $lastAD := $ADs[1]
+     let $LastADid := replace($lastAD//td[last()],'#','')   (: get the last asset declaration, and from that the ID :)
+     let $NrofDaysneededForSubmittingAD := tiUtil:SubstractDates($electiondate,$lastAD//td[last() -1])
         return
-            tiUtil:WriteSequenceAsTR( ("MPname","First name", "Last name", "Link at parliament.ge","Last Asset Declaration","Wikipedia","Twitter","Facebook","LinkedIn"),
+            tiUtil:WriteSequenceAsTR( ("MPname","First name", "Last name", "Link at parliament.ge","Last Asset Declaration",
+            "Number of days  between electiondate and submission of Last Asset Declaration",
+            "Total Number of Asset Declarations submitted",
+            "Wikipedia","Twitter","Facebook","LinkedIn"),
                                       ($MP,
                                       $MPnames[2],$MPnames[1],
                                       concat($baseurl,$row//*:td//*:a/@href),
-                                      if ($LastAD = '') then '' else concat("https://declaration.gov.ge/eng/declaration.php?id=",$LastAD),      
+                                      if ($LastADid = '') then '' else concat("https://declaration.gov.ge/declaration.php?id=",$LastADid),  
+                                      string($NrofDaysneededForSubmittingAD),
+                                      string(count($ADs)),
                                       concat("http://ka.wikipedia.org/w/index.php?search=",replace($MPclean,' ','%20')),
                                       concat("https://twitter.com/search?q=",replace($MPclean,' ','%20')),
                                       concat("http://www.facebook.com/search.php?q=",replace($MPclean,' ','%20')),
