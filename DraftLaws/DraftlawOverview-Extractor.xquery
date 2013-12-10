@@ -12,7 +12,7 @@ let $doc := doc('DraftlawOverview.xml')
 
 
 let $table := 
-<table>
+<table date='{current-dateTime()}'>
 {
 for $p in $doc//p[.//a] 
 let $text :=   string-join($p//text()[string-length(.) gt 1],' ')  (: text we want :)
@@ -35,6 +35,6 @@ tiUtil:WriteSequenceAsTR($niceoutput)
 </table>
 
 return 
- 
+ $table
 
- tiUtil:trTOcsv($table)  
+ (: tiUtil:trTOcsv($table)  :)

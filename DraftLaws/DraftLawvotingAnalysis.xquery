@@ -1,3 +1,5 @@
+declare variable $url external; 
+
 let $votes := doc('VotesPerLaw.xml')
 let $outcomes := doc('OutcomePerLaw.xml')
 
@@ -153,8 +155,8 @@ for $v in $values
    
 let $voteanalysis :=
 <div id='vote'>
-<h2>Analysis of votes</h2>
-<p>This analysis is based on data extracted at {current-dateTime()}.</p>
+<h2>Analysis of final votes on laws which have been accepted.</h2>
+<p>This analysis is based on data extracted at {current-dateTime()} from <a href='{$url}'>{$url}</a>.</p>
 
 <h3>Analysis of Votes per month</h3>
 {$lawspermonth}
@@ -215,11 +217,11 @@ for $p in $distinct-people
 return
 
 
-( 
- $personcount,
+( $voteanalysis,
 <div id='votesperlaw'>
 <h3>Analysis of  votes per law</h3>
 {($absentstat,$supporters,$againststat)}
 </div>,
-$voteanalysis
+ $personcount 
+
 )
