@@ -67,4 +67,4 @@ java -Xmx2G -cp  "$saxon" net.sf.saxon.Query DraftLawvotingAnalysis.xquery url="
 
 # gzip big files
 
-gzip "$VotesPerLaw" "$VotesPerLawCSV" "$OutcomePerLaw" "$OutcomePerLawCSV"
+gzip -f "$VotesPerLaw" "$VotesPerLawCSV" "$OutcomePerLaw" "$OutcomePerLawCSV"
