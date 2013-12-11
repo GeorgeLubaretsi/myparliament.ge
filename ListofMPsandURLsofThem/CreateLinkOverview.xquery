@@ -50,6 +50,7 @@ let $table :=
             tiUtil:WriteSequenceAsTR( ("MPname","First name", "Last name", "Link at parliament.ge","Last Asset Declaration",
             "Number of days  between electiondate and submission of Last Asset Declaration",
             "Total Number of Asset Declarations submitted",
+            "All Asset Declaration ID's and Dates",
             "Wikipedia","Twitter","Facebook","LinkedIn"),
                                       ($MP,
                                       $MPnames[2],$MPnames[1],
@@ -57,6 +58,7 @@ let $table :=
                                       if ($LastADid = '') then '' else concat("https://declaration.gov.ge/declaration.php?id=",$LastADid),  
                                       string($NrofDaysneededForSubmittingAD),
                                       string(count($ADs)),
+                                      string-join(for $ad in $ADs return concat($ad//td[last() -1],':',replace($lastAD//td[last()],'#','')),','), (: all AD's :)
                                       concat("http://ka.wikipedia.org/w/index.php?search=",replace($MPclean,' ','%20')),
                                       concat("https://twitter.com/search?q=",replace($MPclean,' ','%20')),
                                       concat("http://www.facebook.com/search.php?q=",replace($MPclean,' ','%20')),
