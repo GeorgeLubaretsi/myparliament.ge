@@ -65,3 +65,6 @@ java -cp  "$saxon" net.sf.saxon.Query XML2CSV.xquery xml="$VotesPerLaw" |sed '1d
 # Step 4 : then do the analysis with DraftLawvotingAnalysis.xquery which yields DraftLawvotingAnalysis.html
 java -Xmx2G -cp  "$saxon" net.sf.saxon.Query DraftLawvotingAnalysis.xquery url="$PassedLawURL" > DraftLawvotingAnalysis.html
 
+# gzip big files
+
+gzip "$VotesPerLaw" "$VotesPerLawCSV" "$OutcomePerLaw" "$OutcomePerLawCSV"
