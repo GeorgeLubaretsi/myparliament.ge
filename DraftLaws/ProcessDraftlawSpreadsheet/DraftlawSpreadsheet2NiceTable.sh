@@ -5,6 +5,13 @@
 #(be sure to take the correct tab!!!)
 # and save in $1 to this call
 
+## TODO: Download the HTML view on the spreadsheet automatically.   
+# MM tried the technique in https://sites.google.com/site/collaboratory20/journal/usingcurltodownloadagooglespreadsheetasxlsexcel
+## Works but the html option gives you html5 which is not valid XML....
+## Moreover I could not fetch the correct worksheet
+## The script getSpreadsheet.sh works (when you give your own password/email), but only yields tsv and thus also  not the correct worksheet.
+
+
 # Parameters:
 # $1 : name of web verstion of the spreadsheet local
 # $2 geo|eng (how the attributes will be written)
@@ -23,8 +30,8 @@ url=$3
 OurSpreadsheet="InternSpreadsheet.html"
 
 cat $downloadedSpreadsheet |
-grep -P  -o "<body .*</body>"  > "$OurSpreadsheet";
+grep -P  -o "<table .*</table>"  > "$OurSpreadsheet";
 
 java -cp  "$saxon" net.sf.saxon.Query DraftlawSpreadsheet2NiceTable.xquery lang="$lang" doc="$OurSpreadsheet"  url="$url" |xmllint --format -
-rm "$OurSpreadsheet"
+#rm "$OurSpreadsheet"
 
