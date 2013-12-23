@@ -32,6 +32,6 @@ OurSpreadsheet="InternSpreadsheet.html"
 cat $downloadedSpreadsheet |
 grep -P  -o "<table .*</table>"  > "$OurSpreadsheet";
 
-java -cp  "$saxon" net.sf.saxon.Query DraftlawSpreadsheet2NiceTable.xquery lang="$lang" doc="$OurSpreadsheet"  url="$url" |xmllint --format -
+java -cp  "$saxon" net.sf.saxon.Query DraftlawSpreadsheet2NiceTable.xquery    lang="$lang" doc="$OurSpreadsheet"  url="$url" |xmllint --format - |sed '1d'
 #rm "$OurSpreadsheet"
 
