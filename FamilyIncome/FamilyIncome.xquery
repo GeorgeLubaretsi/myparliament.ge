@@ -1,6 +1,6 @@
 import module namespace FaminAD = "http://transparency.ge/AssetDeclarations/FamilyIncme" at "FamilyIncomeModule.xquery";
  
-let  $ADheader :=   ($FaminAD:col[.//@name="ADheader"]//tr[contains(td[5],"საქართველოს პარლამენტი")])  (: Just parliamnet [contains(td[5],"საქართველოს პარლამენტი")]  :)  (: subsequence($col[.//@name="ADheader"]//tr,1,1)    [td[last()] = '#47806'] :)
+let  $ADheader :=   $FaminAD:col[.//@name="ADheader"]//tr  (: Just parliamnet [contains(td[5],"საქართველოს პარლამენტი")]  :)  (: subsequence($col[.//@name="ADheader"]//tr,1,1)    [td[last()] = '#47806'] :)
 
 let $ADrelatives := $FaminAD:col[.//@name="ADfamily_relations"]//tr
 

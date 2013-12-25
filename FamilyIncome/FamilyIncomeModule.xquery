@@ -39,10 +39,10 @@ declare function FaminAD:WriteAsNiceTable($family){
 {
 ($family/@*,
 <tr>
- <!--<th>First Name</th><th>Last Name</th> -->
+  <th>First Name</th><th>Last Name</th>  
 <th>Family Role</th><th>Gender</th><th>Age</th><th>% Household Income</th><th>Income</th><th></th><th>Car</th></tr>,
-<!--<caption>Income of the household of {string($family/@po)} declared at {string($family/@date)} (<a href="{concat($FaminAD:ADbaseurl,replace($family/@id,"#",''))}">Source (geo)</a>) 
-(<a href="{concat($FaminAD:ADbaseurlENG,replace($family/@id,"#",''))}">Source (eng)</a>). Public Official at {string($family/@org)}.</caption>-->,
+<caption>Income of the household of {string($family/@po)} declared at {string($family/@date)} (<a href="{concat($FaminAD:ADbaseurl,replace($family/@id,"#",''))}">Source (geo)</a>) 
+(<a href="{concat($FaminAD:ADbaseurlENG,replace($family/@id,"#",''))}">Source (eng)</a>). Public Official at {string($family/@org)}.</caption> ,
 $family//tr
 )
 }
@@ -170,8 +170,8 @@ for $fam in $family
     <tr>
     {
     (
-    (:  TEMP commented out  $member//td[1],
-    $member//td[2],   :)
+    (:  TEMP commented out the first and last names :)  $member//td[1],
+    $member//td[2],    
     if ($pos =1) then <td>{$FaminAD:public_official}</td> else $member//td[last()-1],
     $genders[$pos],
     <td>{if ($age = 666) then '?' else $age}</td>,
