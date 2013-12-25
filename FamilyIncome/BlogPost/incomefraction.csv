@@ -1,0 +1,15 @@
+# Number of Asset Declarations in which the income of the public official who filed the declaration is 
+# is a fraction of the total household income between N and N+1 (eg there are 197 declarations in which the income of the public official 
+# constitutes between 0 and 10 procent of the household income.
+#Fraction,Count
+0,197 
+10,68 
+20,115 
+30,220 
+40,296 
+50,558 
+60,810 
+70,1066 
+80,1293 
+90,999 
+100,5104 
