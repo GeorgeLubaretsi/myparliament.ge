@@ -28,7 +28,9 @@ declare variable $ADbaseurlENG := "https://declaration.gov.ge/eng/declaration?id
 declare variable  $English_Ent_Activity := doc('/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/en/ADentrepreneurial_activity_en.xml');
 
 
-declare variable $col := collection('/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/ka') ;
+declare variable $colpath external; (:  '/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/ka' ;  :)
+declare variable $outputtype external;
+declare variable $col := collection($colpath);
 declare variable $eng_col := collection('/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/en') ;
  
 declare function ti:WriteAsNiceTable($family){
@@ -57,18 +59,18 @@ for $tr in $family//tr return
 
 };
 
-declare variable $SQLcreatetable := "
+declare variable $SQLcreatetable := string("
 -- Table: representative_url
-
--- DROP TABLE representative_family_income;
-
-CREATE TABLE representative_family_income
+-- DROP TABLE representative_total_income;
+CREATE TABLE representative_total_income
 (
   id serial NOT NULL,
   representative_id integer,
-  ad_id integer,
-  html_table text NOT NULL,
-  CONSTRAINT representative_family_income_pkey PRIMARY KEY (id),
+  ad_id integer NOT NULL,
+  ad_submission_date date NOT NULL,
+  ad_entrepeunerial_income integer,
+  ad_paid_work_income integer,
+  CONSTRAINT representative_total_income_pkey PRIMARY KEY (id),
   CONSTRAINT representative_id_refs_person_ptr_id FOREIGN KEY (representative_id)
       REFERENCES representative_representative (person_ptr_id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE INITIALLY DEFERRED
@@ -76,23 +78,22 @@ CREATE TABLE representative_family_income
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE representative_family_income
+ALTER TABLE representative_total_income
   OWNER TO shenmartav;
-
 -- Index: representative_url_representative_id
-
 -- DROP INDEX representative_url_representative_id;
-";
+");
 
 
-declare function ti:WriteAsSQLInsert($family){
-(
- concat("&#10;INSERT INTO representative_family_income (representative_id,AD_id,submission_date,HTML_Table) 
- VALUES (COALESCE((SELECT person_id FROM popit_personname WHERE name_ka='",$family/@po,"'),1),", replace($family/@id,"#",''),",",$family/@date,",") 
- ,$family
- ,")" 
+declare function ti:WriteAsSQLInsert($mprow){
+
+ concat("&#10;INSERT INTO representative_total_income (representative_id,ad_id,ad_submission_date,ad_entrepeunerial_income,ad_paid_work_income) 
+ VALUES (COALESCE((SELECT person_id FROM popit_personname WHERE name_ka='",$mprow[1],"'),1),", replace($mprow[2],"#",''),",",$mprow[3],",",$mprow[4],",",$mprow[5],")" 
  )
 };
+
+
+
 (: remove members which have exactly the same name from the family, we always only keep the oldest :)
 declare function  ti:RemoveDoubles($members){ 
  let $fnlns := distinct-values( for $m in $members return <tr>{subsequence($m//td,1,2)}</tr>)
@@ -199,26 +200,37 @@ for $fam in $family
     </div>
 };
 
-
-  
+(: write output either as csv, or as sql insert statements :)
+declare function ti:MPincome($outputtype){ 
  
 let  $ADheader :=  $col[.//@name="ADheader"]//tr
     [contains(td[5],"საქართველოს პარლამენტი")] (: Just parliamnet [contains(td[5],"საქართველოს პარლამენტი")]  :)  
     [td[last()-1] ge '2012-10-01']  (: only from after 2012 election :)
-     
+    
+return
 
- 
-    for $row in $ADheader
+ (if ($outputtype='csv') then () else $SQLcreatetable
+ ,
+    distinct-values(
+    for $row   in $ADheader
         let $ADid := $row//td[last()]
         let $name := concat($row//td[1]," ",$row//td[2])
         let $date := $row//td[last()-1]
-        
+        let $out := ($name, $ADid,$date,string(ti:EntrepeneurialIncome($row,$ADid,$col)), string(ti:PaidWorkIncome($row,$ADid,$col)))
         where not( $ADheader[td[1] = $row/td[1] and td[2]=$row/td[2] and td[last()-1] gt $date])  (: so only take the last submitted AD :)
+              and not(matches(normalize-space($name),'^$'))
         order by $name
         return
-        concat('&#10;',string-join(($name, $ADid,$date,string(ti:EntrepeneurialIncome($row,$ADid,$col)), string(ti:PaidWorkIncome($row,$ADid,$col))), '&#09;')
-        )
-
-
+        if ($outputtype='csv') then
+        concat('&#10;',string-join($out, '&#09;'))
+        else
+        ti:WriteAsSQLInsert($out)  
+    )    
+)
+        };
  
+ 
+ 
+ti:MPincome($outputtype) 
+
   
