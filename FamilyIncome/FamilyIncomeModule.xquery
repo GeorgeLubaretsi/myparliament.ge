@@ -8,13 +8,17 @@ module namespace FaminAD = "http://transparency.ge/AssetDeclarations/FamilyIncme
 A fantastic example is https://declaration.gov.ge/eng/declaration?id=48161
  
  
- TODO: 
- 
- * shell script for on git
- * Somthing still goes wrong with the entrepeneurial activities
- *  
+    
 
 GEORGIAN VERSION
+
+OUTPUT schema for CSV
+
+Every row describes the income of each member of a family. All rows with the same  Asset Declaration ID constitute one family.
+
+First Name;Last Name;Family Role;Gender;Age;% Household Income;Income;Car;Name of Public Official;Organization of Public Official;Asset Declaration ID;Date of Submission of Asset DEclaration
+
+
 :)
 
 declare namespace ti = "http://transparency.ge";
@@ -32,6 +36,52 @@ declare variable  $FaminAD:English_Ent_Activity := doc('/Users/admin/Documents/T
 
 declare variable $FaminAD:col := collection('/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/ka') ;
 declare variable $FaminAD:eng_col := collection('/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/en') ;
+ 
+ 
+(: given a row in $ADheader (which denotes one public official and one Asset Declaration), compute the total family income of that person/asset declaration :)
+
+declare function FaminAD:ComputeFamilyIncome($row,$ADid,$col){  (: $ADid should match with that of the row, ootherwise it does not make sense :)
+(:let $ADid := $row//td[last()]  :)
+let $relatives := tiUtil:relatives($ADid,$col)
+let $family :=    FaminAD:RemoveDoubles(($row,$relatives)) 
+let $incomedata:= $col[.//@name='ADpaid_work']//tr[td[last()] = $ADid]
+let $incomes := 
+        
+        for $row in $family
+            let $inGEL := sum((
+                            for $gel in $incomedata[td[1]=$row/td[1] and td[2]=$row/td[2]  and td[6]= 'GEL'] //td[5]
+                                return number($gel)
+                            ,
+                            for $usd in $incomedata[td[1]=$row/td[1] and td[2]=$row/td[2]  and td[6]= 'USD'] //td[5]
+                                return number($usd) * $FaminAD:USD_GELexchange_rate 
+                             , 
+                             FaminAD:EntrepeneurialIncome($row,$ADid,$col)    
+                            ))
+            return
+             
+             if ( $inGEL) then $inGEL else 0 
+return
+  sum($incomes)
+};
+
+(: given a row in $ADheader (which denotes one public official and one Asset Declaration), compute the total  income of that person/asset declaration :)
+declare function FaminAD:ComputeTotalIncome($row,$ADid,$col){
+(:let $ADid := $row//td[last()]  :)
+let $incomedata:= $col[.//@name='ADpaid_work']//tr[td[last()] = $ADid]
+let $inGEL := sum((
+                            for $gel in $incomedata[td[1]=$row/td[1] and td[2]=$row/td[2]  and td[6]= 'GEL'] //td[5]
+                                return number($gel)
+                            ,
+                            for $usd in $incomedata[td[1]=$row/td[1] and td[2]=$row/td[2]  and td[6]= 'USD'] //td[5]
+                                return number($usd) * $FaminAD:USD_GELexchange_rate 
+                             , 
+                             FaminAD:EntrepeneurialIncome($row,$ADid,$col)    
+                            ))
+            
+return
+  $inGEL
+};
+ 
  
 declare function FaminAD:WriteAsNiceTable($family){
 (: delete names when we delete the names again :)
@@ -112,9 +162,14 @@ declare function  FaminAD:RemoveDoubles($members){
 
 declare function FaminAD:EntrepeneurialIncome($row,$id,$col){
 
-
-         let $row := tiUtil:GeorgianName2EnglishName($row/td[1],$row/td[2],$id,$col,$FaminAD:eng_col)  (: English version of the name :)
          
+         let $row := 
+            if ($col = $FaminAD:col)  (: we use the Georgian collection, and thus have to convert the names :)
+            then
+            tiUtil:GeorgianName2EnglishName($row/td[1],$row/td[2],$id,$col,$FaminAD:eng_col)  (: English version of the name :)
+            else
+            $row
+            
          (: this is a copy of the calculation for paid work, except the amount and dimension are in other fields :)
          let $incomedata:= $FaminAD:eng_col[.//@name='ADentrepreneurial_activity']//tr[td[last()] = $id]
             return sum((
@@ -143,7 +198,8 @@ for $fam in $family
                             ,
                             for $usd in $incomedata[td[1]=$row/td[1] and td[2]=$row/td[2]  and td[6]= 'USD'] //td[5]
                                 return number($usd) * $FaminAD:USD_GELexchange_rate 
-                             , FaminAD:EntrepeneurialIncome($row,$fam/@id,$FaminAD:col)    
+                             , 
+                             FaminAD:EntrepeneurialIncome($row,$fam/@id,$FaminAD:col)    
                             ))
             return
              
