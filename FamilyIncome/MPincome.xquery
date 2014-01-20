@@ -25,40 +25,16 @@ declare variable $language := "geo"; (: eng|geo :)
 declare variable $public_official := if ($language = 'eng') then 'Public Official' else 'საჯარო თანამდებობის პირის';
 declare variable $ADbaseurl := "https://declaration.gov.ge/declaration?id=";
 declare variable $ADbaseurlENG := "https://declaration.gov.ge/eng/declaration?id=";
-declare variable  $English_Ent_Activity := doc('/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/en/ADentrepreneurial_activity_en.xml');
+(: declare variable  $English_Ent_Activity := doc('/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/en/ADentrepreneurial_activity_en.xml'); :)
 
 
 declare variable $colpath external; (:  '/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/ka' ;  :)
+declare variable $colpath_english external;  (: '/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/en' :)
 declare variable $outputtype external;
 declare variable $col := collection($colpath);
-declare variable $eng_col := collection('/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/en') ;
- 
-declare function ti:WriteAsNiceTable($family){
-(: delete names when we delete the names again :)
-<table class='family_income' border='1' >
-{
-($family/@*,
-<tr>
- <th>First Name</th><th>Last Name</th> 
-<th>Family Role</th><th>Gender</th><th>Age</th><th>% Household Income</th><th>Income</th><th></th><th>Car</th></tr>,
-<caption>Income of the household of {string($family/@po)} declared at {string($family/@date)} (<a href="{concat($ADbaseurl,replace($family/@id,"#",''))}">Source (geo)</a>) 
-(<a href="{concat($ADbaseurlENG,replace($family/@id,"#",''))}">Source (eng)</a>).</caption>,
-$family//tr
-)
-}
-</table>
-};
-
-declare function ti:WriteAsCSVTable($family){
-<table>
-{
-for $tr in $family//tr return
-    <tr><td>{$family/@id}</td>{$tr//td}</tr>
-}
-</table>
-
-};
-
+declare variable $eng_col := collection($colpath_english) ;
+  
+  
 declare variable $SQLcreatetable := string("
 -- Table: representative_url
 -- DROP TABLE representative_total_income;
@@ -139,67 +115,7 @@ let $incomedata:= $col[.//@name='ADpaid_work']//tr[td[last()] = $id]
              
              if ( $inGEL) then $inGEL else 0 
 };
-
-declare function ti:MakeFamilyIncome($family){
-for $fam in $family
-    let $cars := 
-        let $cardata:= $col[.//@name='ADmovable_property']//tr[td[last()] = $fam/@id]
-        for $row in $fam//tr
-            let $car := $cardata[td[1]=$row/td[1] and td[2]=$row/td[2] and td[4] = 'მსუბუქი ავტომანქანა' ]//td[5] 
-            return
-            if ($car) then <td>{string-join($car,'; ')}</td> else <td>-</td>
-    let $incomes := 
-        let $incomedata:= $col[.//@name='ADpaid_work']//tr[td[last()] = $fam/@id]
-        for $row in $fam//tr
-            let $inGEL := sum((
-                            for $gel in $incomedata[td[1]=$row/td[1] and td[2]=$row/td[2]  and td[6]= 'GEL'] //td[5]
-                                return number($gel)
-                            ,
-                            for $usd in $incomedata[td[1]=$row/td[1] and td[2]=$row/td[2]  and td[6]= 'USD'] //td[5]
-                                return number($usd) * $USD_GELexchange_rate 
-                             , ti:EntrepeneurialIncome($row,$fam/@id,$col)    
-                            ))
-            return
-             
-             if ( $inGEL) then $inGEL else 0 
-    let $family_income := sum($incomes )
-    let $fractions := for $i in $incomes return if ( $family_income = 0) then 0 else $i div $family_income
-    let $ages := 
-        let $submissiondate := $fam/@date
-           for $row in $fam//tr return  tiUtil:AgeInYears($row/td[4],$submissiondate)
-    let $genders := for $row in $fam//tr return  tiUtil:Gender($row//td[1])
-    
-    where $family_income ne 0   (: we exclude these :)
-    order by $fractions[1]
-     
-    return
-    
-    <div po='{concat($fam//tr[1]//td[1]," ",$fam//tr[1]//td[2])}'>
-    { $fam/@*,
-    for $member at $pos in $fam//tr 
-        let $incomefraction := round($fractions[$pos] * 100) div 100
-        let $age := $ages[$pos]
-        order by $incomefraction descending, $age descending
-        return
-    <tr>
-    {
-    (
-     $member//td[1],
-    $member//td[2],   
-    if ($pos =1) then <td>{$public_official}</td> else $member//td[last()-1],
-    $genders[$pos],
-    <td>{if ($age = 666) then '?' else $age}</td>,
-    <td>{round($incomefraction * 100)}</td>,
-    <td>{round($incomes[$pos] * 100) div 100}</td>,
-    <td>GEL</td>,
-    $cars[$pos]
-    )
-    }
-    </tr>
-    }
-    </div>
-};
-
+ 
 (: write output either as csv, or as sql insert statements :)
 declare function ti:MPincome($outputtype){ 
  
