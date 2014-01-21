@@ -37,37 +37,42 @@ declare variable $eng_col := collection($colpath_english) ;
   
 declare variable $SQLcreatetable := string("
 -- Table: incomedeclaration_declarationtotalincome
--- DROP TABLE incomedeclaration_declarationtotalincome ;
-CREATE TABLE incomedeclaration_declarationtotalincome 
-(
-  id serial NOT NULL,
-  representative_id integer,
-  ad_id integer NOT NULL,
-  ad_submission_date date NOT NULL,
-  ad_entrepeuneurial_income integer,
-  ad_paid_work_income integer,
-  CONSTRAINT representative_total_income_pkey PRIMARY KEY (id),
-  CONSTRAINT representative_id_refs_person_ptr_id FOREIGN KEY (representative_id)
-      REFERENCES representative_representative (person_ptr_id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE INITIALLY DEFERRED
-)
-WITH (
-  OIDS=FALSE
-);
-ALTER TABLE incomedeclaration_declarationtotalincome 
-  OWNER TO shenmartav;
--- Index:  representative_id
+ 
+--CREATE TABLE incomedeclaration_declarationtotalincome 
+--(
+--  id serial NOT NULL,
+--  representative_id integer,
+--  ad_id integer NOT NULL,
+--  ad_submission_date date NOT NULL,
+--  ad_entrepeuneurial_income integer,
+--  ad_paid_work_income integer,
+--  CONSTRAINT representative_total_income_pkey PRIMARY KEY (id),
+--  CONSTRAINT representative_id_refs_person_ptr_id FOREIGN KEY (representative_id)
+--      REFERENCES representative_representative (person_ptr_id) MATCH SIMPLE
+--      ON UPDATE NO ACTION ON DELETE NO ACTION DEFERRABLE INITIALLY DEFERRED
+--)
+--WITH (
+--  OIDS=FALSE
+--);
+--ALTER TABLE incomedeclaration_declarationtotalincome 
+--  OWNER TO shenmartav;
+ 
+
+DELETE FROM incomedeclaration_declarationtotalincome;
  
 ");
 
 
 declare function ti:WriteAsSQLInsert($mprow){
 
-
+(: Our goal 
+INSERT INTO incomedeclaration_declarationtotalincome (representative_id,ad_id,ad_submission_date,ad_entrepreneurial_income,ad_paid_work_income)
+ VALUES ((SELECT person_id FROM popit_personname WHERE name_ka='აზერ სულეიმანოვი'),45799,TO_DATE('2013-05-13','YYYY-MM-DD'),0,53776.03);
+:) 
  
 
  concat("&#10;INSERT INTO incomedeclaration_declarationtotalincome  (representative_id,ad_id,ad_submission_date,ad_entrepeuneurial_income,ad_paid_work_income) 
- VALUES (COALESCE((SELECT person_id FROM popit_personname WHERE name_ka='",normalize-space($mprow[1]),"'),1),", replace($mprow[2],"#",''),",TO_DATE('",$mprow[3],"','YYYY-MM-DD')",",",$mprow[4],",",$mprow[5],")" 
+ VALUES ((SELECT person_id FROM popit_personname WHERE name_ka='",normalize-space($mprow[1]),"'),", replace($mprow[2],"#",''),",TO_DATE('",$mprow[3],"','YYYY-MM-DD')",",",$mprow[4],",",$mprow[5],");" 
  )
 };
 
