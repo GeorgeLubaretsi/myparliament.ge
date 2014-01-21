@@ -36,15 +36,15 @@ declare variable $eng_col := collection($colpath_english) ;
   
   
 declare variable $SQLcreatetable := string("
--- Table: representative_url
--- DROP TABLE representative_total_income;
-CREATE TABLE representative_total_income
+-- Table: incomedeclaration_declarationtotalincome
+-- DROP TABLE incomedeclaration_declarationtotalincome ;
+CREATE TABLE incomedeclaration_declarationtotalincome 
 (
   id serial NOT NULL,
   representative_id integer,
   ad_id integer NOT NULL,
   ad_submission_date date NOT NULL,
-  ad_entrepeunerial_income integer,
+  ad_entrepeuneurial_income integer,
   ad_paid_work_income integer,
   CONSTRAINT representative_total_income_pkey PRIMARY KEY (id),
   CONSTRAINT representative_id_refs_person_ptr_id FOREIGN KEY (representative_id)
@@ -54,17 +54,20 @@ CREATE TABLE representative_total_income
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE representative_total_income
+ALTER TABLE incomedeclaration_declarationtotalincome 
   OWNER TO shenmartav;
--- Index: representative_url_representative_id
--- DROP INDEX representative_url_representative_id;
+-- Index:  representative_id
+ 
 ");
 
 
 declare function ti:WriteAsSQLInsert($mprow){
 
- concat("&#10;INSERT INTO representative_total_income (representative_id,ad_id,ad_submission_date,ad_entrepeunerial_income,ad_paid_work_income) 
- VALUES (COALESCE((SELECT person_id FROM popit_personname WHERE name_ka='",$mprow[1],"'),1),", replace($mprow[2],"#",''),",",$mprow[3],",",$mprow[4],",",$mprow[5],")" 
+
+ 
+
+ concat("&#10;INSERT INTO incomedeclaration_declarationtotalincome  (representative_id,ad_id,ad_submission_date,ad_entrepeuneurial_income,ad_paid_work_income) 
+ VALUES (COALESCE((SELECT person_id FROM popit_personname WHERE name_ka='",normalize-space($mprow[1]),"'),1),", replace($mprow[2],"#",''),",TO_DATE('",$mprow[3],"','YYYY-MM-DD')",",",$mprow[4],",",$mprow[5],")" 
  )
 };
 
@@ -134,7 +137,7 @@ return
         let $date := $row//td[last()-1]
         let $out := ($name, $ADid,$date,string(ti:EntrepeneurialIncome($row,$ADid,$col)), string(ti:PaidWorkIncome($row,$ADid,$col)))
         where not( $ADheader[td[1] = $row/td[1] and td[2]=$row/td[2] and td[last()-1] gt $date])  (: so only take the last submitted AD :)
-              and not(matches(normalize-space($name),'^$'))
+              and (: not(matches(normalize-space($name),'^$')) :) matches(normalize-space($name),' ') (: should contain at least a space :)
         order by $name
         return
         if ($outputtype='csv') then
