@@ -23,20 +23,27 @@ First Name;Last Name;Family Role;Gender;Age;% Household Income;Income;Car;Name o
 
 declare namespace ti = "http://transparency.ge";
 declare namespace xsd="http://www.w3.org/2001/XMLSchema";
-
-import module namespace tiUtil= "http://transparency.ge/XML-Utilities" at "/Users/admin/Documents/TIGeorgia/DeclarationsScraper/asset-declaration-scraper/scripts/XQueryTextMinerScripts/XMLUtilities.xquery";
- 
+import module namespace tiUtil= "http://transparency.ge/XML-Utilities" at 
+      "https://raw.github.com/tigeorgia/asset-declaration-scraper/master/scripts/XQueryTextMinerScripts/XMLUtilities.xquery";
+      
 declare variable $FaminAD:USD_GELexchange_rate  := number(1.65); (: see http://www.xe.com/currencycharts/?from=USD&to=GEL&view=5Y , we guessed the average in the period 2010-2013 :)
 declare variable $FaminAD:language := "geo"; (: eng|geo :) 
 declare variable $FaminAD:public_official := if ($FaminAD:language = 'eng') then 'Public Official' else 'საჯარო თანამდებობის პირის';
 declare variable $FaminAD:ADbaseurl := "https://declaration.gov.ge/declaration?id=";
 declare variable $FaminAD:ADbaseurlENG := "https://declaration.gov.ge/eng/declaration?id=";
-declare variable  $FaminAD:English_Ent_Activity := doc('/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/en/ADentrepreneurial_activity_en.xml');
 
 
-declare variable $FaminAD:col := collection('/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/ka') ;
-declare variable $FaminAD:eng_col := collection('/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/en') ;
- 
+
+
+declare variable $colpath external; (:  '/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/ka' ;  :)
+declare variable $colpath_english external;  (: '/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/en' :)
+declare variable $outputtype external;
+declare variable $col := collection($colpath);
+declare variable $eng_col := collection($colpath_english) ;
+  
+declare variable $FaminAD:col := collection($colpath); ;
+declare variable $FaminAD:eng_col := collection($colpath_english) ;
+declare variable  $FaminAD:English_Ent_Activity := $eng_col[.//@name='ADentrepreneurial_activity'];
  
 (: given a row in $ADheader (which denotes one public official and one Asset Declaration), compute the total family income of that person/asset declaration :)
 
