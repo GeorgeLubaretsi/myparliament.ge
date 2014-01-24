@@ -37,11 +37,11 @@ declare variable $FaminAD:ADbaseurlENG := "https://declaration.gov.ge/eng/declar
 
 declare variable $FaminAD:colpath external; (:  '/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/ka' ;  :)
 declare variable $FaminAD:colpath_english external;  (: '/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/en' :)
-declare variable $FaminAD:outputtype external;
+(: declare variable $FaminAD:outputtype external; :)
  
   
-declare variable $FaminAD:col := collection($colpath); ;
-declare variable $FaminAD:eng_col := collection($colpath_english) ;
+declare variable $FaminAD:col := collection($FaminAD:colpath); ;
+declare variable $FaminAD:eng_col := collection($FaminAD:colpath_english) ;
 declare variable  $FaminAD:English_Ent_Activity := $eng_col[.//@name='ADentrepreneurial_activity'];
  
 (: given a row in $ADheader (which denotes one public official and one Asset Declaration), compute the total family income of that person/asset declaration :)
