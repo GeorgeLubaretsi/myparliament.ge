@@ -35,11 +35,10 @@ declare variable $FaminAD:ADbaseurlENG := "https://declaration.gov.ge/eng/declar
 
 
 
-declare variable $colpath external; (:  '/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/ka' ;  :)
-declare variable $colpath_english external;  (: '/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/en' :)
-declare variable $outputtype external;
-declare variable $col := collection($colpath);
-declare variable $eng_col := collection($colpath_english) ;
+declare variable $FaminAD:colpath external; (:  '/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/ka' ;  :)
+declare variable $FaminAD:colpath_english external;  (: '/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/en' :)
+declare variable $FaminAD:outputtype external;
+ 
   
 declare variable $FaminAD:col := collection($colpath); ;
 declare variable $FaminAD:eng_col := collection($colpath_english) ;
