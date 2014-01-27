@@ -37,12 +37,19 @@ declare variable $FaminAD:ADbaseurlENG := "https://declaration.gov.ge/eng/declar
 
 declare variable $FaminAD:colpath external; (:  '/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/ka' ;  :)
 declare variable $FaminAD:colpath_english external;  (: '/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/en' :)
-(: declare variable $FaminAD:outputtype external; :)
+ declare variable $FaminAD:outputtype external; 
  
-  
-declare variable $FaminAD:col := collection($FaminAD:colpath); ;
+ 
+ (:BEDUG :)
+ (:
+declare variable $FaminAD:colpath := '/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/ka' ;  
+declare variable $FaminAD:colpath_english := '/Users/admin/Documents/TIGeorgia/DeclarationsScraper/Spreadsheets/xml/en' ;
+ :)
+ 
+ 
+declare variable $FaminAD:col := collection($FaminAD:colpath); 
 declare variable $FaminAD:eng_col := collection($FaminAD:colpath_english) ;
-declare variable  $FaminAD:English_Ent_Activity := $eng_col[.//@name='ADentrepreneurial_activity'];
+declare variable  $FaminAD:English_Ent_Activity := $FaminAD:eng_col[.//@name='ADentrepreneurial_activity'];
  
 (: given a row in $ADheader (which denotes one public official and one Asset Declaration), compute the total family income of that person/asset declaration :)
 
@@ -166,6 +173,33 @@ declare function  FaminAD:RemoveDoubles($members){
           return ($members[td[4] eq $eldest])[1]  (: YES there are people who list themselves twice, so we remove them like this :)
 };
 
+
+declare function FaminAD:WriteAsSQLInsert_representative_FamilyIncome($Allfamilies){
+  
+let $del := for $adid in $Allfamilies//@id return concat("&#10;DELETE FROM representative_FamilyIncome WHERE ad_id=",replace($adid,'#',''))
+
+let $insert :=
+    for $row in $Allfamilies//tr
+    let $MPname := $row/parent::div/@po
+    let $adid := replace($row/parent::div/@id,'#','')
+    let $MPinsertStat := concat("(SELECT person_id FROM popit_personname WHERE name_ka='",$MPname,"'",')')
+    return  
+                    concat("&#10;INSERT INTO representative_FamilyIncome (representative_id,ad_id,submission_date,Fam_name,Fam_role,Fam_gender,Fam_date_of_birth,Fam_income,Fam_cars) VALUES (&#10;",
+                           string-join(($MPinsertStat,
+                                        $adid,
+                                       if ($row/parent::div/@date castable as xs:date) then concat("TO_DATE('",$row/parent::div/@date,"','YYYY-MM-DD')") else 'NULL',   (: TO_DATE('",$mprow[3],"','YYYY-MM-DD')"  :)
+                                        concat($row//td[1],' ',$row//td[2]),
+                                        $row//td[3],
+                                        $row//td[4],
+                                        if ($row//td[5] castable as xs:date) then concat("TO_DATE('",$row//td[5],"','YYYY-MM-DD')") else 'NULL', 
+                                        $row//td[7],
+                                        $row//td[9]),',  &#10;'),
+                           "&#10;)"
+                           )
+     return ($del,$insert)
+ };
+
+
 declare function FaminAD:EntrepeneurialIncome($row,$id,$col){
 
          
@@ -194,7 +228,7 @@ for $fam in $family
         for $row in $fam//tr
             let $car := $cardata[td[1]=$row/td[1] and td[2]=$row/td[2] and td[4] = 'მსუბუქი ავტომანქანა' ]//td[5] 
             return
-            if ($car) then <td>{string-join($car,'; ')}</td> else <td>-</td>
+            if ($car) then <td>{string-join($car,'; ')}</td> else <td>NULL</td>
     let $incomes := 
         let $incomedata:= $FaminAD:col[.//@name='ADpaid_work']//tr[td[last()] = $fam/@id]
         for $row in $fam//tr
@@ -215,6 +249,7 @@ for $fam in $family
     let $ages := 
         let $submissiondate := $fam/@date
            for $row in $fam//tr return  tiUtil:AgeInYears($row/td[4],$submissiondate)
+    let $dates_of_birth :=        $fam//tr//td[4]
     let $genders := for $row in $fam//tr return  tiUtil:Gender($row//td[1])
     
     where $family_income ne 0   (: we exclude these :)
@@ -226,8 +261,8 @@ for $fam in $family
     { $fam/@*,
     for $member at $pos in $fam//tr 
         let $incomefraction := round($fractions[$pos] * 100) div 100
-        let $age := $ages[$pos]
-        order by $incomefraction descending, $age descending
+        let $dob := $dates_of_birth[$pos]
+        order by $incomefraction descending, $dob descending
         return
     <tr>
     {
@@ -236,7 +271,7 @@ for $fam in $family
     $member//td[2],    
     if ($pos =1) then <td>{$FaminAD:public_official}</td> else $member//td[last()-1],
     $genders[$pos],
-    <td>{if ($age = 666) then '?' else $age}</td>,
+    $dob,
     <td>{round($incomefraction * 100)}</td>,
     <td>{round($incomes[$pos] * 100) div 100}</td>,
     <td>GEL</td>,

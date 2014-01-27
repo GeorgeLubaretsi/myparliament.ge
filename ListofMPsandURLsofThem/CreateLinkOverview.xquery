@@ -4,7 +4,7 @@ which is first downloaded and cleaned using CleanGovPage.sh	:)
 declare namespace ti = "http://transparency.ge";
 
 import module namespace tiUtil= "http://transparency.ge/XML-Utilities" at 
-      "https://raw.github.com/tigeorgia/asset-declaration-scraper/master/scripts/XQueryTextMinerScripts/XMLUtilities.xquery"; (: note how to create this link from the git address. The git address brings you to the HTML page! :)
+      "https://raw.github.com/tigeorgia/asset-declaration-scraper/master/scripts/XQueryTextMinerScripts/XMLUtilities.xquery"; 
 
 
 declare option saxon:output "method=text";  (: output as text without xml header :)
@@ -35,8 +35,10 @@ declare variable $baseurl := "http://parliament.ge/";
 
 
 
-let $doc := doc('1682371.xml')  
-
+let $doc := doc('1682371.xml')  (: this is the document which is downloaded using 
+    url="http://parliament.ge/index.php?option=com_content&view=article&id=1682&Itemid=371&lang=ge"
+    ../CrawlScripts/CleanGovPage.sh "$url"
+    :)
 
 (: part for asset declarations :)
 let $AD := $col[.//@name="ADheader"]

@@ -13,8 +13,9 @@ GEORGIAN VERSION
 declare namespace ti = "http://transparency.ge";
 declare namespace xsd="http://www.w3.org/2001/XMLSchema";
 
-import module namespace tiUtil= "http://transparency.ge/XML-Utilities" at "/Users/admin/Documents/TIGeorgia/DeclarationsScraper/asset-declaration-scraper/scripts/XQueryTextMinerScripts/XMLUtilities.xquery";
-
+import module namespace tiUtil= "http://transparency.ge/XML-Utilities" at 
+      "https://raw.github.com/tigeorgia/asset-declaration-scraper/master/scripts/XQueryTextMinerScripts/XMLUtilities.xquery"; (: note how to create this link from the git address. The git address brings you to the HTML page! :)
+      
 
 declare option saxon:output "method=text";  (: output as text without xml header :)
 declare option saxon:output    "omit-xml-declaration=yes";
@@ -90,6 +91,32 @@ declare function  ti:RemoveDoubles($members){
           return ($members[td[4] eq $eldest])[1]  (: YES there are people who list themselves twice, so we remove them like this :)
 };
 
+
+
+declare function ti:WriteAsSQLUpdate($mprow){
+
+(: Our goal 
+
+UPDATE table_name
+SET column1=value1,column2=value2,...
+WHERE some_column=some_value;
+:) 
+ let $where := concat("&#10;WHERE  representative_id=", "(SELECT person_id FROM popit_personname WHERE name_ka='",normalize-space($mprow[1]),"')")
+ let $setvalues := string-join(
+ (
+ string-join(("submission_date",concat("TO_DATE('",$mprow[3],"','YYYY-MM-DD')")),'='),
+ string-join(("entrepreneurial_salary",$mprow[4] ),'='),
+ string-join(("main_salary",$mprow[5] ),'=')
+ )
+ ,',&#10;    ') 
+
+return
+ concat("&#10;UPDATE representative_representative 
+SET ",$setvalues,$where ,  ";" )
+};
+
+
+
 declare function ti:EntrepeneurialIncome($row,$id,$col){
 
 
@@ -133,8 +160,7 @@ let  $ADheader :=  $col[.//@name="ADheader"]//tr
     
 return
 
- (if ($outputtype='csv') then () else $SQLcreatetable
- ,
+ 
     distinct-values(
     for $row   in $ADheader
         let $ADid := $row//td[last()]
@@ -148,9 +174,9 @@ return
         if ($outputtype='csv') then
         concat('&#10;',string-join($out, '&#09;'))
         else
-        ti:WriteAsSQLInsert($out)  
+        ti:WriteAsSQLUpdate($out) (: ti:WriteAsSQLInsert($out)  :)
     )    
-)
+
         };
  
  

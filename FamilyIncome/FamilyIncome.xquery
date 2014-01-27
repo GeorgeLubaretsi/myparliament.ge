@@ -1,6 +1,12 @@
-import module namespace FaminAD = "http://transparency.ge/AssetDeclarations/FamilyIncme" at "https://raw.github.com/tigeorgia/myparliament.ge/master/FamilyIncome/FamilyIncomeModule.xquery";
- 
-let  $ADheader :=   $FaminAD:col[.//@name="ADheader"]//tr  (: Just parliamnet [contains(td[5],"საქართველოს პარლამენტი")]  :)  (: subsequence($col[.//@name="ADheader"]//tr,1,1)    [td[last()] = '#47806'] :)
+import module namespace FaminAD = "http://transparency.ge/AssetDeclarations/FamilyIncme" at "FamilyIncomeModule.xquery"; (:"https://raw.github.com/tigeorgia/myparliament.ge/master/FamilyIncome/:)
+  
+
+declare option saxon:output "method=text";  (: output as text without xml header :)
+declare option saxon:output    "omit-xml-declaration=yes";
+
+  
+
+let  $ADheader :=   subsequence($FaminAD:col[.//@name="ADheader"]//tr[contains(td[5],"საქართველოს პარლამენტი")],1,2)  (: Just parliamnet [contains(td[5],"საქართველოს პარლამენტი")]  :)  (: subsequence($col[.//@name="ADheader"]//tr,1,1)    [td[last()] = '#47806'] :)
 
 let $ADrelatives := $FaminAD:col[.//@name="ADfamily_relations"]//tr
 
@@ -24,7 +30,9 @@ return
  
  
  
- <root>{FaminAD:MakeFamilyIncome($families)}</root>
+ FaminAD:WriteAsSQLInsert_representative_FamilyIncome(<root>{FaminAD:MakeFamilyIncome($families)}</root>)
+ 
+ 
  
  
  (:
@@ -36,11 +44,11 @@ let $doc := doc('Parliament_familyincome.xml')
 return
   (: ($SQLcreatetable,for $fam in $doc//div return  ti:WriteAsSQLInsert(ti:WriteAsNiceTable($fam))) :) (: for creating the SQL statements :)
 
-for $fam in $doc//div return  ti:WriteAsNiceTable($fam)                  (: for creating the HTML view :)
-(: for $fam in $doc//div return   tiUtil:trTOcsv(ti:WriteAsCSVTable($fam)) :)  (: for creating the csv :)
+(: for $fam in $doc//div return  ti:WriteAsNiceTable($fam)           :)       (: for creating the HTML view :)
+ for $fam in $doc//div return   FaminAD:WriteAsCSVTable($fam)  (: for creating the csv :)
  
- 
+ :)
 
-:)
+
 
 
