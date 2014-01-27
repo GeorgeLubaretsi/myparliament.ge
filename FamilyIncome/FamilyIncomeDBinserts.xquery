@@ -6,6 +6,7 @@ import module namespace tiUtil= "http://transparency.ge/XML-Utilities" at
       "https://raw.github.com/tigeorgia/asset-declaration-scraper/master/scripts/XQueryTextMinerScripts/XMLUtilities.xquery";
       
 
+
 declare option saxon:output "method=text";  (: output as text without xml header :)
 declare option saxon:output    "omit-xml-declaration=yes";
 
@@ -240,7 +241,7 @@ for $fam in $family
         let $submissiondate := $fam/@date
            for $row in $fam//tr return  tiUtil:AgeInYears($row/td[4],$submissiondate)
     let $dates_of_birth :=        $fam//tr//td[4]
-    let $genders := for $row in $fam//tr return  tiUtil:Gender($row//td[1])
+    let $genders := for $row in $fam//tr return  tiUtil:Gender($row//td[1])[1]
     
     where $family_income ne 0   (: we exclude these :)
     order by $fractions[1]
@@ -252,7 +253,7 @@ for $fam in $family
     for $member at $pos in $fam//tr 
         let $incomefraction := round($fractions[$pos] * 100) div 100
         let $dob := $dates_of_birth[$pos]
-        order by $incomefraction descending, $dob descending
+       (: order by $incomefraction descending, $dob descending :)
         return
     <tr>
     {
@@ -260,7 +261,7 @@ for $fam in $family
     (:  TEMP commented out the first and last names :)  $member//td[1],
     $member//td[2],    
     if ($pos =1) then <td>{$FaminAD:public_official}</td> else $member//td[last()-1],
-    $genders[$pos],
+     $genders[$pos],
     $dob,
     <td>{round($incomefraction * 100)}</td>,
     <td>{round($incomes[$pos] * 100) div 100}</td>,
@@ -281,7 +282,7 @@ for $fam in $family
   
 (: the main call :)  
 
-let  $ADheader :=   $FaminAD:col[.//@name="ADheader"]//tr[contains(td[5],"საქართველოს პარლამენტი")] (: Just parliamnet [contains(td[5],"საქართველოს პარლამენტი")]  :)  (: subsequence($col[.//@name="ADheader"]//tr,1,1)    [td[last()] = '#47806'] :)
+let  $ADheader :=   $FaminAD:col[.//@name="ADheader"]//tr[contains(td[5],"საქართველოს პარლამენტი")](: Just parliamnet [contains(td[5],"საქართველოს პარლამენტი")]   just one guy [td[last()]='#44075']  :)  (: subsequence($col[.//@name="ADheader"]//tr,1,1)    [td[last()] = '#47806'] :)
 
 let $ADrelatives := $FaminAD:col[.//@name="ADfamily_relations"]//tr
 
@@ -300,10 +301,11 @@ let $families :=
 
  
 return
- 
- 
+  
+  
  
  
  
  FaminAD:WriteAsSQLInsert_representative_FamilyIncome(<root>{FaminAD:MakeFamilyIncome($families)}</root>)
+ 
  
