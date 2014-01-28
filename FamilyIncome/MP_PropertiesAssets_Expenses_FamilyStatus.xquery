@@ -104,14 +104,14 @@ return
         let $ADid := $row//td[last()]
         let $name := concat($row//td[1]," ",$row//td[2])
         let $date := $row//td[last()-1]
-        let $famstat := if ($col[.//@name="ADfamily_relations"][.//td[last()]=$ADid][.//td[last()-1]= "მეუღლე"]) then "married" else 'not married'
+        let $famstat := if ($col[.//@name="ADfamily_relations"][.//td[last()]=$ADid][.//td[last()-1]= "მეუღლე"]) then "married" else 'unmarried'
         let $realestate := 
            tiUtil:NotEmpty(string-join(for $r in $ADrealestate[.//td[last()]=$ADid] return string-join(subsequence($r//td,4,2),", "),"; ")  )
-        let $movprop :=    tiUtil:NotEmpty(string-join(for $r in $ADmovable_property[.//td[last()]=$ADid] return string-join(subsequence($r//td,4,2),", "),"; ")  )
+        let $movprop :=    (string-join(for $r in $ADmovable_property[.//td[last()]=$ADid] return string-join(subsequence($r//td,4,2),", "),"; ")  )
           
         let $expenses :=   tiUtil:NotEmpty(string-join(for $r in $ADincome_or_expenditures[.//td[last()]=$ADid] return 
                                 replace(string-join(subsequence($r//td,3,3),", "),'გასავალი,', '') ,"; " ))
-        let $out :=  ($name, $ADid, for $i in ($famstat,$expenses, concat($realestate,': ',$movprop))
+        let $out :=  ($name, $ADid, for $i in ($famstat,$expenses, tiUtil:NotEmpty(string-join(($realestate,$movprop),'; ')))
                      return tiUtil:QuotesAround($i) 
                      )
         where not( $ADheader[td[1] = $row/td[1] and td[2]=$row/td[2] and td[last()-1] gt $date])  (: so only take the last submitted AD :)

@@ -152,6 +152,8 @@ declare function FaminAD:WriteAsSQLInsert($family){
  ,")" 
  )
 };
+
+
 (: remove members which have exactly the same name from the family, we always only keep the oldest :)
 declare function  FaminAD:RemoveDoubles($members){ 
  let $fnlns := distinct-values( for $m in $members return <tr>{subsequence($m//td,1,2)}</tr>)
@@ -167,7 +169,7 @@ declare function  FaminAD:RemoveDoubles($members){
 
 declare function FaminAD:WriteAsSQLInsert_representative_FamilyIncome($Allfamilies){
   
-let $del := for $adid in $Allfamilies//@id return concat("&#10;DELETE FROM representative_FamilyIncome WHERE ad_id=",replace($adid,'#',''))
+let $del := for $adid in $Allfamilies//@id return concat("&#10;DELETE FROM representative_familyincome WHERE ad_id=",replace($adid,'#',''),';')
 
 let $insert :=
     for $row in $Allfamilies//tr
@@ -175,17 +177,19 @@ let $insert :=
     let $adid := replace($row/parent::div/@id,'#','')
     let $MPinsertStat := concat("(SELECT person_id FROM popit_personname WHERE name_ka='",$MPname,"'",')')
     return  
-                    concat("&#10;INSERT INTO representative_FamilyIncome (representative_id,ad_id,submission_date,Fam_name,Fam_role,Fam_gender,Fam_date_of_birth,Fam_income,Fam_cars) VALUES (&#10;",
+                    concat("&#10;INSERT INTO representative_familyincome (representative_id,ad_id,submission_date,fam_name,fam_role,fam_gender,fam_date_of_birth,fam_income,fam_cars) VALUES (&#10;",
                            string-join(($MPinsertStat,
                                         $adid,
                                        if ($row/parent::div/@date castable as xs:date) then concat("TO_DATE('",$row/parent::div/@date,"','YYYY-MM-DD')") else 'NULL',   (: TO_DATE('",$mprow[3],"','YYYY-MM-DD')"  :)
-                                        concat($row//td[1],' ',$row//td[2]),
-                                        $row//td[3],
-                                        $row//td[4],
+                                        tiUtil:QuotesAround(concat($row//td[1],' ',$row//td[2])),
+                                        tiUtil:QuotesAround($row//td[3]),
+                                        tiUtil:QuotesAround($row//td[4]),
                                         if ($row//td[5] castable as xs:date) then concat("TO_DATE('",$row//td[5],"','YYYY-MM-DD')") else 'NULL', 
                                         $row//td[7],
-                                        $row//td[9]),',  &#10;'),
-                           "&#10;)"
+                                        if ($row//td[9]='NULL') then 'NULL' else tiUtil:QuotesAround($row//td[9])
+                                        ),
+                                        ',  &#10;'),
+                           "&#10;);"
                            )
      return ($del,$insert)
  };
@@ -258,7 +262,7 @@ for $fam in $family
     <tr>
     {
     (
-    (:  TEMP commented out the first and last names :)  $member//td[1],
+    $member//td[1],
     $member//td[2],    
     if ($pos =1) then <td>{$FaminAD:public_official}</td> else $member//td[last()-1],
      $genders[$pos],
@@ -289,10 +293,13 @@ let $ADrelatives := $FaminAD:col[.//@name="ADfamily_relations"]//tr
 let $families := 
     for $row in $ADheader
         let $ADid := $row//td[last()]
+        let $name := concat($row//td[1]," ",$row//td[2])
+        let $date := $row//td[last()-1]
         let $relatives := $ADrelatives[td[last()]=$ADid]
-        
+        where not( $ADheader[td[1] = $row/td[1] and td[2]=$row/td[2] and td[last()-1] gt $date])  (: so only take the last submitted AD :)
+              and (: not(matches(normalize-space($name),'^$')) :) matches(normalize-space($name),' ') (: should contain at least a space :)
         return
-        <AD id='{$ADid}' date='{$row//td[last()-1]}'>
+        <AD id='{$ADid}' date='{$date}'>
         {
         FaminAD:RemoveDoubles(($row,$relatives)) (: remove members which have exactly the same name from the family, we always only keep the oldest :)
         }
