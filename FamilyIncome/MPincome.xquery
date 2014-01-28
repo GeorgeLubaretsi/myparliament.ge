@@ -101,7 +101,7 @@ UPDATE table_name
 SET column1=value1,column2=value2,...
 WHERE some_column=some_value;
 :) 
- let $where := concat("&#10;WHERE  representative_id=", "(SELECT person_id FROM popit_personname WHERE name_ka='",normalize-space($mprow[1]),"')")
+ let $where := concat("&#10;WHERE person_ptr_id=", "(SELECT person_id FROM popit_personname WHERE name_ka='",normalize-space($mprow[1]),"')")
  let $setvalues := string-join(
  (
  string-join(("submission_date",concat("TO_DATE('",$mprow[3],"','YYYY-MM-DD')")),'='),
