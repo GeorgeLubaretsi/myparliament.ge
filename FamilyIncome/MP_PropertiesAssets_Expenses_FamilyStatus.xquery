@@ -112,7 +112,7 @@ return
         let $expenses :=   tiUtil:NotEmpty(string-join(for $r in $ADincome_or_expenditures[.//td[last()]=$ADid] return 
                                 replace(string-join(subsequence($r//td,3,3),", "),'გასავალი,', '') ,"; " ))
         let $out :=  ($name, $ADid, for $i in ($famstat,$expenses, tiUtil:NotEmpty(string-join(($realestate,$movprop),'; ')))
-                     return tiUtil:QuotesAround($i) 
+                     return tiUtil:SingleQuotesAround($i) 
                      )
         where not( $ADheader[td[1] = $row/td[1] and td[2]=$row/td[2] and td[last()-1] gt $date])  (: so only take the last submitted AD :)
               and (: not(matches(normalize-space($name),'^$')) :) matches(normalize-space($name),' ') (: should contain at least a space :)

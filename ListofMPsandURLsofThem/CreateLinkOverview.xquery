@@ -107,12 +107,12 @@ if ($outputtype='sql') then
     for $row in $table//tr
     let $MPname := concat($row//td[2],' ',$row//td[3])
     let $MPinsertStat := concat("(SELECT person_id FROM popit_personname WHERE name_ka='",$MPname,"'",')')
-    let $del := concat("&#10;DELETE FROM representative_url WHERE representative_id=",$MPinsertStat,'   AND (label LIKE "Asset%"  OR label LIKE "Link%" );')
+    let $del := concat("&#10;DELETE FROM representative_url WHERE representative_id=",$MPinsertStat,"   AND (label LIKE 'Asset%'  OR label LIKE 'Link%' );")
     let $insert := for $url in $row//td
                    where starts-with($url/@id,'Link') or starts-with($url/@id,'Asset')
                    return 
                     concat("&#10;INSERT INTO representative_url (representative_id,label,url) VALUES (&#10;",
-                           string-join(($MPinsertStat,tiUtil:QuotesAround($url/@id),tiUtil:QuotesAround($url/text())),',&#10;'),
+                           string-join(($MPinsertStat,tiUtil:SingleQuotesAround($url/@id),tiUtil:SingleQuotesAround($url/text())),',&#10;'),
                            ");"
                            )
      return ($del,$insert)

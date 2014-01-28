@@ -181,12 +181,12 @@ let $insert :=
                            string-join(($MPinsertStat,
                                         $adid,
                                        if ($row/parent::div/@date castable as xs:date) then concat("TO_DATE('",$row/parent::div/@date,"','YYYY-MM-DD')") else 'NULL',   (: TO_DATE('",$mprow[3],"','YYYY-MM-DD')"  :)
-                                        tiUtil:QuotesAround(concat($row//td[1],' ',$row//td[2])),
-                                        tiUtil:QuotesAround($row//td[3]),
-                                        tiUtil:QuotesAround($row//td[4]),
+                                        tiUtil:SingleQuotesAround(concat($row//td[1],' ',$row//td[2])),
+                                        tiUtil:SingleQuotesAround($row//td[3]),
+                                        tiUtil:SingleQuotesAround($row//td[4]),
                                         if ($row//td[5] castable as xs:date) then concat("TO_DATE('",$row//td[5],"','YYYY-MM-DD')") else 'NULL', 
                                         $row//td[7],
-                                        if ($row//td[9]='NULL') then 'NULL' else tiUtil:QuotesAround($row//td[9])
+                                        if ($row//td[9]='NULL') then 'NULL' else tiUtil:SingleQuotesAround($row//td[9])
                                         ),
                                         ',  &#10;'),
                            "&#10;);"
