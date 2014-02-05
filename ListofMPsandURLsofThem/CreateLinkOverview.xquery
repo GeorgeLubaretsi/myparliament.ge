@@ -76,21 +76,14 @@ let $table :=
            "Number of days  between electiondate and submission of Last Asset Declaration",
             "Total Number of Asset Declarations submitted",
             :)
-            for $ad in $ADs return concat('Asset Declaration (',$ad//td[last() -1],')')
-            ,
-             
-            "Wikipedia","Twitter","Facebook","LinkedIn"),
+            for $ad in $ADs return concat('Asset Declaration (',$ad//td[last() -1],')')),
                                       ($MP,
                                       $MPnames[2],$MPnames[1],
                                       concat($baseurl,($row//*:td//*:a)[1]/@href),
                                      (: if ($LastADid = '') then '' else concat("https://declaration.gov.ge/declaration.php?id=",$LastADid),  
                                       string($NrofDaysneededForSubmittingAD),
                                       string(count($ADs)), :)
-                                      for $ad in $ADs return concat($AssetDeclarationURL,replace($ad//td[last()],'#','')), (: all AD's :)
-                                      concat("http://ka.wikipedia.org/w/index.php?search=",replace($MPclean,' ','%20')),
-                                      concat("https://twitter.com/search?q=",replace($MPclean,' ','%20')),
-                                      concat("http://www.facebook.com/search.php?q=",replace($MPclean,' ','%20')),
-                                      concat("https://www.linkedin.com/vsearch/p?type=people&amp;keywords=",replace($MPclean,' ','%20'))
+                                      for $ad in $ADs return concat($AssetDeclarationURL,replace($ad//td[last()],'#','')) (: all AD's :)
                                       ),
                                       'id'
             )
@@ -111,8 +104,8 @@ if ($outputtype='sql') then
     let $insert := for $url in $row//td
                    where starts-with($url/@id,'Link') or starts-with($url/@id,'Asset')
                    return 
-                    concat("&#10;INSERT INTO representative_url (representative_id,label,url) VALUES (&#10;",
-                           string-join(($MPinsertStat,tiUtil:SingleQuotesAround($url/@id),tiUtil:SingleQuotesAround($url/text())),',&#10;'),
+                    concat("&#10;INSERT INTO representative_url (representative_id,label,label_en,label_ka,url) VALUES (&#10;",
+                           string-join(($MPinsertStat,tiUtil:SingleQuotesAround($url/@id),tiUtil:SingleQuotesAround($url/@id),tiUtil:SingleQuotesAround($url/@id),tiUtil:SingleQuotesAround($url/text())),',&#10;'),
                            ");"
                            )
      return ($del,$insert)
