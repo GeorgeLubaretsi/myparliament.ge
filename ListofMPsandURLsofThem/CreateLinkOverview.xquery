@@ -30,7 +30,7 @@ declare variable $eng_col := collection($colpath_english) ;
 
  
 
-declare variable $baseurl := "http://parliament.ge/";
+declare variable $baseurl := "http://parliament.ge";
 
 
 
@@ -71,7 +71,7 @@ let $table :=
      let $LastADid := replace($lastAD//td[last()],'#','')   (: get the last asset declaration, and from that the ID :)
      let $NrofDaysneededForSubmittingAD := tiUtil:SubstractDates($electiondate,$lastAD//td[last() -1])
         return
-            tiUtil:WriteSequenceAsTR( ("MPname","First name", "Last name", "Link at parliament.ge",
+            tiUtil:WriteSequenceAsTR( ("MPname","First name", "Last name", "Parliament.ge",
            (: "Last Asset Declaration",
            "Number of days  between electiondate and submission of Last Asset Declaration",
             "Total Number of Asset Declarations submitted",
@@ -100,9 +100,9 @@ if ($outputtype='sql') then
     for $row in $table//tr
     let $MPname := concat($row//td[2],' ',$row//td[3])
     let $MPinsertStat := concat("(SELECT person_id FROM popit_personname WHERE name_ka='",$MPname,"'",')')
-    let $del := concat("&#10;DELETE FROM representative_url WHERE representative_id=",$MPinsertStat,"   AND (label LIKE 'Asset%'  OR label LIKE 'Link%' );")
+    let $del := concat("&#10;DELETE FROM representative_url WHERE representative_id=",$MPinsertStat,"   AND (label LIKE 'Asset%'  OR label LIKE 'Parliament%' );")
     let $insert := for $url in $row//td
-                   where starts-with($url/@id,'Link') or starts-with($url/@id,'Asset')
+                   where starts-with($url/@id,'Parliament') or starts-with($url/@id,'Asset')
                    return 
                     concat("&#10;INSERT INTO representative_url (representative_id,label,label_en,label_ka,url) VALUES (&#10;",
                            string-join(($MPinsertStat,tiUtil:SingleQuotesAround($url/@id),tiUtil:SingleQuotesAround($url/@id),tiUtil:SingleQuotesAround($url/@id),tiUtil:SingleQuotesAround($url/text())),',&#10;'),

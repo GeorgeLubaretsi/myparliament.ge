@@ -67,9 +67,12 @@ WHERE some_column=some_value;
  let $setvalues := string-join(
  (
  string-join(("declaration_id",replace($mprow[2],"#",'') ),'='),
- string-join(("family_status",$mprow[3] ),'='),
- string-join(("expenses",$mprow[4] ),'='),
- string-join(("property_assets",$mprow[5] ),'=')
+ string-join(("family_status_en",$mprow[3] ),'='),
+ string-join(("family_status_ka",$mprow[4] ),'='),
+ string-join(("expenses_en",$mprow[6] ),'='),
+ string-join(("expenses_ka",$mprow[5] ),'='),
+ string-join(("property_assets_en",$mprow[8] ),'='),
+ string-join(("property_assets_ka",$mprow[7] ),'=')
  )
  ,',&#10;    ') 
 
@@ -86,7 +89,8 @@ SET ",$setvalues,$where ,  ";" )
  
 (: write output either as csv, or as sql insert statements :)
 declare function ti:MPdata($outputtype){ 
- 
+
+(: Georgian data :) 
 let  $ADheader :=  $col[.//@name="ADheader"]//tr
     [contains(td[5],"საქართველოს პარლამენტი")] (: Just parliamnet [contains(td[5],"საქართველოს პარლამენტი")]  :)  
     [td[last()-1] ge '2012-10-01']  (: only from after 2012 election :)
@@ -95,6 +99,17 @@ let $ADrealestate := $col[.//@name="ADreal_estate"]//tr
 let $ADmovable_property :=   $col[.//@name="ADmovable_property"]//tr   (: ADmovable_property :) 
 
 let $ADincome_or_expenditures :=   $col[.//@name="ADincome_or_expenditures"]//tr[contains(.//td[last()-1],'გასავალი')]
+
+
+(: English data :)
+let $ADheaderEng :=  $eng_col[.//@name="ADheader"]//tr
+    [contains(td[5],"Parliament of Georgia")] (: Just parliamnet [contains(td[5],"საქართველოს პარლამენტი")]  :)
+    [td[last()-1] ge '2012-10-01']  (: only from after 2012 election :)
+
+let $ADrealestateEng := $eng_col[.//@name="ADreal_estate"]//tr
+let $ADmovable_propertyEng := $eng_col[.//@name="ADmovable_property"]//tr   (: ADmovable_property :)
+
+let $ADincome_or_expendituresEng := $eng_col[.//@name="ADincome_or_expenditures"]//tr[contains(.//td[last()-1],'Expenditure')]
  
  
 return
@@ -104,14 +119,21 @@ return
         let $ADid := $row//td[last()]
         let $name := concat($row//td[1]," ",$row//td[2])
         let $date := $row//td[last()-1]
-        let $famstat := if ($col[.//@name="ADfamily_relations"][.//td[last()]=$ADid][.//td[last()-1]= "მეუღლე"]) then "married" else 'unmarried'
+        let $famstat := if ($col[.//@name="ADfamily_relations"][.//td[last()]=$ADid][.//td[last()-1]= "მეუღლე"]) then "Married" else 'Not married'
+        let $famstat_ka := if ($col[.//@name="ADfamily_relations"][.//td[last()]=$ADid][.//td[last()-1]= "მეუღლე"]) then "დაქორწინებული" else 'დაუქორწინებელი'
         let $realestate := 
            tiUtil:NotEmpty(string-join(for $r in $ADrealestate[.//td[last()]=$ADid] return string-join(subsequence($r//td,4,2),", "),"; ")  )
+        let $realestateEng :=
+           tiUtil:NotEmpty(string-join(for $r in $ADrealestateEng[.//td[last()]=$ADid] return string-join(subsequence($r//td,4,2),", "),"; ")  )
+
         let $movprop :=    (string-join(for $r in $ADmovable_property[.//td[last()]=$ADid] return string-join(subsequence($r//td,4,2),", "),"; ")  )
+	let $movpropEng :=    (string-join(for $r in $ADmovable_propertyEng[.//td[last()]=$ADid] return string-join(subsequence($r//td,4,2),", "),"; ")  )
           
         let $expenses :=   tiUtil:NotEmpty(string-join(for $r in $ADincome_or_expenditures[.//td[last()]=$ADid] return 
                                 replace(string-join(subsequence($r//td,3,3),", "),'გასავალი,', '') ,"; " ))
-        let $out :=  ($name, $ADid, for $i in ($famstat,$expenses, tiUtil:NotEmpty(string-join(($realestate,$movprop),'; ')))
+	let $expensesEng :=   tiUtil:NotEmpty(string-join(for $r in $ADincome_or_expendituresEng[.//td[last()]=$ADid] return
+                                replace(string-join(subsequence($r//td,3,3),", "),'გასავალი,', '') ,"; " ))
+        let $out :=  ($name, $ADid, for $i in ($famstat,$famstat_ka,$expenses,$expensesEng, tiUtil:NotEmpty(string-join(($realestate,$movprop),'; ')),tiUtil:NotEmpty(string-join(($realestateEng,$movpropEng),'; ')))
                      return tiUtil:SingleQuotesAround($i) 
                      )
         where not( $ADheader[td[1] = $row/td[1] and td[2]=$row/td[2] and td[last()-1] gt $date])  (: so only take the last submitted AD :)
