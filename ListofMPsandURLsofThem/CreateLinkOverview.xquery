@@ -4,7 +4,7 @@ which is first downloaded and cleaned using CleanGovPage.sh	:)
 declare namespace ti = "http://transparency.ge";
 
 import module namespace tiUtil= "http://transparency.ge/XML-Utilities" at 
-      "https://raw.github.com/tigeorgia/asset-declaration-scraper/master/scripts/XQueryTextMinerScripts/XMLUtilities.xquery"; 
+      "https://raw.github.com/tigeorgia/asset-declaration-scraper/master/scripts/XQueryTextMinerScripts/XMLUtilities.xquery";
 
 
 declare option saxon:output "method=text";  (: output as text without xml header :)
@@ -105,7 +105,7 @@ if ($outputtype='sql') then
                    where starts-with($url/@id,'Parliament') or starts-with($url/@id,'Asset')
                    return 
                     concat("&#10;INSERT INTO representative_url (representative_id,label,label_en,label_ka,url) VALUES (&#10;",
-                           string-join(($MPinsertStat,tiUtil:SingleQuotesAround($url/@id),tiUtil:SingleQuotesAround($url/@id),tiUtil:SingleQuotesAround($url/@id),tiUtil:SingleQuotesAround($url/text())),',&#10;'),
+                           string-join(($MPinsertStat,tiUtil:SingleQuotesAround($url/@id),tiUtil:SingleQuotesAround($url/@id),tiUtil:SingleQuotedAndGeorgianAssetDeclaration($url/@id),tiUtil:SingleQuotesAround($url/text())),',&#10;'),
                            ");"
                            )
      return ($del,$insert)
